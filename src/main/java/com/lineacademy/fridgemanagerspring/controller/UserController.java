@@ -2,6 +2,7 @@ package com.lineacademy.fridgemanagerspring.controller;
 
 import com.lineacademy.fridgemanagerspring.domain.user.User;
 import com.lineacademy.fridgemanagerspring.dto.user.request.CreateUserRequest;
+import com.lineacademy.fridgemanagerspring.dto.user.request.LoginRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.response.UserResponse;
 import com.lineacademy.fridgemanagerspring.service.UserService;
 import jakarta.validation.Valid;
@@ -57,6 +58,20 @@ public class UserController {
                     .body(Map.of(
                             "message", "서버 에러가 발생되었습니다."
                     ));
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(
+            @Valid @RequestBody LoginRequest request
+    ) {
+        try {
+            // 1. 사용자가 입력해온 값을 DB에서 조회해서 있는지 확인
+            User user = userService.login(request);
+
+            // 2. 토큰을 생성해서 response 전달
+        } catch () {
+
         }
     }
 }

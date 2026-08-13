@@ -3,8 +3,10 @@ package com.lineacademy.fridgemanagerspring.service;
 import com.lineacademy.fridgemanagerspring.domain.fridge.Fridge;
 import com.lineacademy.fridgemanagerspring.domain.user.User;
 import com.lineacademy.fridgemanagerspring.dto.user.request.CreateUserRequest;
+import com.lineacademy.fridgemanagerspring.dto.user.request.LoginRequest;
 import com.lineacademy.fridgemanagerspring.repository.FridgeRepository;
 import com.lineacademy.fridgemanagerspring.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -65,6 +67,22 @@ public class UserService {
                 .build();
         fridgeRepository.save(defaultFridge);
 
+        return user;
+    }
+
+    public User login(LoginRequest request) {
+        // 함수처럼 만들어서 쓸 수 있는게 Java에서도 지원되지만 함수는 아니고
+        // 람다 표현식 () ->
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("INVALID_CREDENTIALS"));
+
+        if (user.getDeletedAt() != null) {
+            throw new RuntimeException("INVALID_CREDENTIALS");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("INVALID_CREDENTIALS");
+        }
         return user;
     }
 }
