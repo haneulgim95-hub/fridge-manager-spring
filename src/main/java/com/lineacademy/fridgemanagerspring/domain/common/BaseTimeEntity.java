@@ -11,7 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Getter
-@MappedSuperclass
+@MappedSuperclass  // 이 클래스를 상속해서 사용할 것이다.
+// 엔티티가 기록되는 등의 이벤트를 감지하여 자동 업데이트를 진행해주기 위함
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
     @CreatedDate // 이 엔티티가 처음 생성되어 저장될 때 생성 시간을 자동으로 저장
