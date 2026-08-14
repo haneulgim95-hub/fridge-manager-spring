@@ -46,12 +46,13 @@ public class UserService {
         // 입력된 birthdate는 String이니깐 이걸 Date 객체로 변환
         LocalDate parsedBirthdate = null;
         // 사용자가 입력한 birthdate가 null이 아니면서 빈값("")도 아닐 경우
-        if (request.getBirthdate() != null && request.getBirthdate().isBlank()) {
+        if (request.getBirthdate() != null && !request.getBirthdate().isBlank()) {
             parsedBirthdate = LocalDate.parse(request.getBirthdate(), DateTimeFormatter.ISO_DATE);
         }
 
         // 사용자 정보를 데이터베이스에 저장
         // 1. 사용자 저장
+        // 먼저 객체를 만들고(builder: User에 만들어놓은 생성자 사용) 저장한다.
         User user = User.builder()
                 .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -71,15 +72,19 @@ public class UserService {
     }
 
     public User login(LoginRequest request) {
+        // 1. 받아온 email값을 통해 사용자가 있는지 확인하고
+
         // 함수처럼 만들어서 쓸 수 있는게 Java에서도 지원되지만 함수는 아니고
         // 람다 표현식 () ->
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("INVALID_CREDENTIALS"));
 
+        // 2. 사용자가 존재한다면, 탈퇴된 회원인지를 검사하고
         if (user.getDeletedAt() != null) {
             throw new RuntimeException("INVALID_CREDENTIALS");
         }
 
+        // 3. 비밀번호가 일치하는지 확인하고
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("INVALID_CREDENTIALS");
         }
