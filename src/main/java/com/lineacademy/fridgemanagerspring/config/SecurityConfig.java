@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 라우터에 따라서 접근 유무를 설정
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
+                                        "/users/create",
                                         "/users/login",
                                         "/users/password-reset",
                                         "/notice/**"
